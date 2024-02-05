@@ -1,0 +1,59 @@
+[versions]
+
+compose = "1.5.4"
+hiltExtensions = "1.1.0"
+hiltVersion = "2.48.1"
+daggerVersion = "2.48.1"
+timberVersion = "5.0.1"
+lifecycleVersion = "2.6.2"
+fragmentVersion = "2.6.2"
+androidGradlePluginVersion = "8.1.1"
+kotlinVersion = "1.9.20"
+kspVersion = "1.9.20-1.0.14"
+androidxCoreVersion = "1.12.0"
+androidxComposeBom = "2023.10.01"
+
+[libraries]
+
+#Timber
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
+
+#hilt
+hilt = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
+hilt-lifecycle = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltExtensions" }
+hilt-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltExtensions" }
+
+# dagger
+dagger-base = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
+dagger-android = { module = "com.google.dagger:dagger-android", version.ref = "daggerVersion" }
+dagger-android-support = { module = "com.google.dagger:dagger-android-support", version.ref = "daggerVersion" }
+
+#lifecycle
+lifecycle-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleVersion" }
+lifecycle-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
+lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleVersion" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleVersion" }
+lifecycle-savestate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycleVersion" }
+lifecycle-compiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecycleVersion" }
+fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentVersion" }
+
+# core
+core = { module = "androidx.core:core-ktx", version.ref = "androidxCoreVersion" }
+
+#compose
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", name = "ui-preview" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", name = "m3" }
+
+
+[plugins]
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
+gradle = { id = "com.android.application", version.ref = "androidGradlePluginVersion" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+
+
