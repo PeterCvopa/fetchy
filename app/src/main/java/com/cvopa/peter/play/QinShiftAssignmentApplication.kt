@@ -20,4 +20,4 @@ class QinShiftAssignmentApplication : Application() {
     }
 }
 
-private const val LOG_TAG_PREFIX = "contacts_"
+private const val LOG_TAG_PREFIX = "fetchy_"
