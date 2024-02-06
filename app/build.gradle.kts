@@ -85,6 +85,14 @@ dependencies {
     //core
     implementation(libs.core)
 
+    //retrofit
+    implementation(libs.retrofit.base)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.retrofit.interceptor)
+
+    // guava
+    implementation(libs.guava)
+
     //compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)

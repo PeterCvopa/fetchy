@@ -8,25 +8,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-  /*  @Inject
-    lateinit var detailVMFactory: DetailVM.Factory
-*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainScreen()
-
-        /*    CompositionLocalProvider(
-                localDetailVMFactory provides detailVMFactory,
-            ) {
-                ContactsApp()
-            }*/
         }
     }
 }
 
-/*
-val localDetailVMFactory = staticCompositionLocalOf<DetailVM.Factory> {
-    error("No ViewModelFactory provided")
-}*/
+
