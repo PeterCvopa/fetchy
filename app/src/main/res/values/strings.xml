@@ -2,5 +2,11 @@
     <string name="app_name">Cvopa</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
+    <string name="error_no_internet">No internet</string>
+    <string name="error_general">Something went wrong</string>
+    <string name="error_input">Invalid input</string>
+    <string name="authorization_input">Wrong username or password.</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
 
 </resources>

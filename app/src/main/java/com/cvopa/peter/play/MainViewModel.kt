@@ -2,12 +2,19 @@ package com.cvopa.peter.play
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
+import com.cvopa.peter.fetchy.R
 import com.cvopa.peter.play.ui.common.BaseViewModel
 import com.cvopa.peter.play.usecase.EncodeSha1UseCase
+import com.cvopa.peter.play.usecase.HasInternetConnectionUseCase
+import com.cvopa.peter.play.usecase.InputValidatorUseCase
 import com.cvopa.peter.play.usecase.LoginDetails
 import com.cvopa.peter.play.usecase.LoginUseCase
+import com.cvopa.peter.play.usecase.NetworkState
+import com.cvopa.peter.play.usecase.SuccessLoginData
+import com.cvopa.peter.play.usecase.ValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -15,6 +22,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     val encodeSha1UseCase: EncodeSha1UseCase,
     val loginUseCase: LoginUseCase,
+    val inputValidatorUseCase: InputValidatorUseCase,
+    val hasInternetConnectionUseCase: HasInternetConnectionUseCase,
 ) : BaseViewModel<MainScreenState>() {
 
     override val initialState: MainScreenState
@@ -24,10 +33,18 @@ class MainViewModel @Inject constructor(
         when (event) {
             is Event.OnLogin -> onLogin(event.loginDetail)
             is Event.OnPasswordChanged -> onPasswordChanged(event.value)
-            is Event.OnPasswordReset -> resetPasswordField()
             is Event.OnUserNameChanged -> onUserNameChanged(event.value)
             is Event.OnUserNameReset -> resetUserNameField()
             is Event.OnLogout -> onLogout()
+            is Event.onPasswordVisibilirtyToggle -> onVisibilityPassToggle()
+        }
+    }
+
+    private fun onVisibilityPassToggle() {
+        state.value.let {
+            if (it is MainScreenState.Logout) {
+                emitState(it.copy(isPasswordHidden = it.isPasswordHidden.not()))
+            }
         }
     }
 
@@ -36,9 +53,17 @@ class MainViewModel @Inject constructor(
     }
 
     private fun onLogin(loginDetail: LoginDetails) {
-        viewModelScope.launch {
+        if (inputValidatorUseCase(loginDetail) == ValidationResult.Invalid) {
+            setError(Error.InputError)
+            return
+        }
 
-            //min delay add here napr zip ?
+        if (hasInternetConnectionUseCase(Unit) == NetworkState.NotAvailable) {
+            setError(Error.NoInternet)
+            return
+        }
+
+        viewModelScope.launch {
             runCatching {
                 setLoading()
                 loginUseCase(
@@ -49,13 +74,16 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onFailure {
-                    setError(Error.General(it))
+                    if (it is HttpException && it.code() == 401) {
+                        setError(Error.AuthorizationError)
+                    } else {
+                        setError(Error.General(it))
+                    }
                     Timber.e(it)
                 }
                 .onSuccess {
                     setSuccess(it)
                 }
-
         }
     }
 
@@ -67,12 +95,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun setSuccess(bitmap: Bitmap) {
-        emitState(MainScreenState.Login(bitmap))
+    private fun setSuccess(data: SuccessLoginData) {
+        emitState(MainScreenState.Login(data.bitmap, data.userName))
     }
 
     private fun setError(error: Error) {
-        Timber.d("peter $error")
         state.value.let {
             if (it is MainScreenState.Logout) {
                 emitState(it.copy(error = error, isLoading = false))
@@ -88,13 +115,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
     private fun onPasswordChanged(value: String) {
         state.value.let {
             if (it is MainScreenState.Logout) {
                 emitState(it.copy(userName = it.userName, userPassword = value))
             }
         }
+        resetError()
     }
 
     private fun onUserNameChanged(value: String) {
@@ -103,15 +130,7 @@ class MainViewModel @Inject constructor(
                 emitState(it.copy(userName = value, userPassword = it.userPassword))
             }
         }
-
-    }
-
-    private fun resetPasswordField() {
-        state.value.let {
-            if (it is MainScreenState.Logout) {
-                emitState(it.copy(userName = it.userName, userPassword = ""))
-            }
-        }
+        resetError()
     }
 
     private fun resetUserNameField() {
@@ -121,7 +140,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
 }
 
 sealed class Event {
@@ -129,23 +147,25 @@ sealed class Event {
     class OnUserNameChanged(val value: String) : Event()
     class OnPasswordChanged(val value: String) : Event()
     data object OnUserNameReset : Event()
-    data object OnPasswordReset : Event()
+    data object onPasswordVisibilirtyToggle : Event()
     data object OnLogout : Event()
 }
 
-
 sealed class MainScreenState {
     data class Logout(
+        val isPasswordHidden: Boolean = true,
         val isLoading: Boolean = false,
         val userName: String = "",
         val userPassword: String = "",
         val error: Error? = null
     ) : MainScreenState()
 
-    data class Login(val image: Bitmap) : MainScreenState()
+    data class Login(val image: Bitmap, val userName: String) : MainScreenState()
 }
 
-sealed class Error(throwable: Throwable) {
-    data object NoInternet : Error(IllegalStateException())
-    data class General(val throwable: Throwable) : Error(throwable)
+sealed class Error(open val throwable: Throwable, val messageRes: Int) {
+    data object NoInternet : Error(IllegalStateException("No internet connection"), R.string.error_no_internet)
+    data object InputError : Error(IllegalStateException("Input error "), R.string.error_input)
+    data object AuthorizationError : Error(IllegalStateException("Wrong username or password"), R.string.authorization_input)
+    data class General(override val throwable: Throwable) : Error(throwable, R.string.error_general)
 }

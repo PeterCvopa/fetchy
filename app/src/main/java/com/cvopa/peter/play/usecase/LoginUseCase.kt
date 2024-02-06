@@ -5,19 +5,19 @@ import com.cvopa.peter.play.api.LoginService
 import com.cvopa.peter.play.api.fromDomain
 import com.cvopa.peter.play.util.SuspendedUseCase
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class LoginUseCase @Inject constructor(
     private val loginService: LoginService,
     val decodeToBitmapUseCase: Decoder64BaseToBitmapUseCase
-) : SuspendedUseCase<LoginDetails, Bitmap>() {
-    override suspend fun execute(input: LoginDetails): Bitmap {
-        return decodeToBitmapUseCase(
+) : SuspendedUseCase<LoginDetails, SuccessLoginData>() {
+    override suspend fun execute(input: LoginDetails): SuccessLoginData {
+        val bitmap = decodeToBitmapUseCase(
             loginService.getImage(input.token, input.userName).fromDomain()
         )
+        return SuccessLoginData(bitmap, input.userName)
     }
 }
 
-
 data class LoginDetails(val token: String, val userName: String)
+data class SuccessLoginData(val bitmap: Bitmap, val userName: String)

@@ -1,5 +1,6 @@
 package com.cvopa.peter.play.api
 
+import com.cvopa.peter.play.usecase.SuccessLoginData
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
