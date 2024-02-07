@@ -18,4 +18,4 @@ interface LoginService {
 
 data class LoginResponse(val image: String)
 
-fun LoginResponse.fromDomain(): String = this.image
+

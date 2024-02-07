@@ -1,9 +1,8 @@
 package com.cvopa.peter.play.usecase
 
-import com.cvopa.peter.play.util.UseCase
+import com.cvopa.peter.play.ui.base.UseCase
 import com.google.common.hash.Hashing
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @Suppress("DEPRECATION")
 class EncodeSha1UseCase @Inject constructor() : UseCase<String, String>() {

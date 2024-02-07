@@ -1,5 +1,6 @@
-package com.cvopa.peter.play.api.di
+package com.cvopa.peter.play.di
 
+import com.cvopa.peter.fetchy.BuildConfig
 import com.cvopa.peter.play.api.LoginService
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -12,8 +13,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
-
-const val baseUrl = "https://mobility.cleverlance.com"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -48,7 +47,7 @@ class RetrofitModule {
         okHttpClient: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(BuildConfig.BASEURL)
             .client(okHttpClient)
             .addConverterFactory(moshiConverterFactory)
             .build()

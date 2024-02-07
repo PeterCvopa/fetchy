@@ -1,9 +1,9 @@
-package com.cvopa.peter.play
+package com.cvopa.peter.play.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.cvopa.peter.play.ui.MainScreen
+import com.cvopa.peter.play.ui.profile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -11,7 +11,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            ProfileScreen()
         }
     }
 }

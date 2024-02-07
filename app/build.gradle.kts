@@ -25,10 +25,12 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            buildConfigField( "String",     "BASEURL", "\"https://mobility.cleverlance.com/\"")
         }
 
         release {
             isMinifyEnabled = false
+            buildConfigField( "String", "BASEURL", "\"https://mobility.cleverlance.com/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -101,5 +103,12 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.preview)
     implementation(libs.androidx.compose.material3)
+
+    //test
+    testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.junit.compose)
+    debugImplementation(libs.androidx.compose.ui.preview)
+    debugImplementation(libs.junit.compose.ui.manifest)
 
 }

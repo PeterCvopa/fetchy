@@ -1,6 +1,6 @@
 package com.cvopa.peter.play.usecase
 
-import com.cvopa.peter.play.util.UseCase
+import com.cvopa.peter.play.ui.base.UseCase
 import javax.inject.Inject
 
 class InputValidatorUseCase @Inject constructor() : UseCase<LoginDetails, ValidationResult>() {

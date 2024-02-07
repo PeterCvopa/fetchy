@@ -1,4 +1,4 @@
-package com.cvopa.peter.play.ui.common
+package com.cvopa.peter.play.ui.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

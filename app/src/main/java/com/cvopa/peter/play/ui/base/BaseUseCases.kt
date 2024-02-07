@@ -1,4 +1,4 @@
-package com.cvopa.peter.play.util
+package com.cvopa.peter.play.ui.base
 
 abstract class SuspendedUseCase<IN, OUT> {
     suspend operator fun invoke(input: IN): OUT {

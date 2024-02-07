@@ -1,9 +1,9 @@
-package com.cvopa.peter.play
+package com.cvopa.peter.play.ui.profile
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
-import com.cvopa.peter.fetchy.R
-import com.cvopa.peter.play.ui.common.BaseViewModel
+import com.cvopa.peter.play.ui.base.BaseViewModel
+import com.cvopa.peter.play.ui.components.ErrorState
 import com.cvopa.peter.play.usecase.EncodeSha1UseCase
 import com.cvopa.peter.play.usecase.HasInternetConnectionUseCase
 import com.cvopa.peter.play.usecase.InputValidatorUseCase
@@ -19,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class ProfileScreenViewModel @Inject constructor(
     val encodeSha1UseCase: EncodeSha1UseCase,
     val loginUseCase: LoginUseCase,
     val inputValidatorUseCase: InputValidatorUseCase,
@@ -27,39 +27,51 @@ class MainViewModel @Inject constructor(
 ) : BaseViewModel<MainScreenState>() {
 
     override val initialState: MainScreenState
-        get() = MainScreenState.Logout()
+        get() = MainScreenState.LoggedOut()
 
     fun onEvent(event: Event) {
         when (event) {
             is Event.OnLogin -> onLogin(event.loginDetail)
-            is Event.OnPasswordChanged -> onPasswordChanged(event.value)
-            is Event.OnUserNameChanged -> onUserNameChanged(event.value)
-            is Event.OnUserNameReset -> resetUserNameField()
+            is Event.OnPasswordChanged -> {
+                onPasswordChanged(event.value)
+                resetError()
+            }
+
+            is Event.OnUserNameChanged -> {
+                onUserNameChanged(event.value)
+                resetError()
+            }
+
+            is Event.OnUserNameReset -> {
+                resetUserNameField()
+                resetError()
+            }
+
             is Event.OnLogout -> onLogout()
-            is Event.onPasswordVisibilirtyToggle -> onVisibilityPassToggle()
+            is Event.OnPasswordVisibilityToggle -> onVisibilityPassToggle()
         }
     }
 
     private fun onVisibilityPassToggle() {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(isPasswordHidden = it.isPasswordHidden.not()))
             }
         }
     }
 
     private fun onLogout() {
-        emitState(MainScreenState.Logout())
+        emitState(MainScreenState.LoggedOut())
     }
 
     private fun onLogin(loginDetail: LoginDetails) {
         if (inputValidatorUseCase(loginDetail) == ValidationResult.Invalid) {
-            setError(Error.InputError)
+            setError(ErrorState.InputErrorState)
             return
         }
 
         if (hasInternetConnectionUseCase(Unit) == NetworkState.NotAvailable) {
-            setError(Error.NoInternet)
+            setError(ErrorState.NoInternet)
             return
         }
 
@@ -75,9 +87,9 @@ class MainViewModel @Inject constructor(
             }
                 .onFailure {
                     if (it is HttpException && it.code() == 401) {
-                        setError(Error.AuthorizationError)
+                        setError(ErrorState.AuthorizationErrorState)
                     } else {
-                        setError(Error.General(it))
+                        setError(ErrorState.General(it))
                     }
                     Timber.e(it)
                 }
@@ -89,19 +101,19 @@ class MainViewModel @Inject constructor(
 
     private fun setLoading() {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(isLoading = true))
             }
         }
     }
 
     private fun setSuccess(data: SuccessLoginData) {
-        emitState(MainScreenState.Login(data.bitmap, data.userName))
+        emitState(MainScreenState.LoggedIn(data.bitmap, data.userName))
     }
 
-    private fun setError(error: Error) {
+    private fun setError(error: ErrorState) {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(error = error, isLoading = false))
             }
         }
@@ -109,7 +121,7 @@ class MainViewModel @Inject constructor(
 
     private fun resetError() {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(error = null, isLoading = false))
             }
         }
@@ -117,25 +129,23 @@ class MainViewModel @Inject constructor(
 
     private fun onPasswordChanged(value: String) {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(userName = it.userName, userPassword = value))
             }
         }
-        resetError()
     }
 
     private fun onUserNameChanged(value: String) {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(userName = value, userPassword = it.userPassword))
             }
         }
-        resetError()
     }
 
     private fun resetUserNameField() {
         state.value.let {
-            if (it is MainScreenState.Logout) {
+            if (it is MainScreenState.LoggedOut) {
                 emitState(it.copy(userName = "", userPassword = it.userPassword))
             }
         }
@@ -147,25 +157,19 @@ sealed class Event {
     class OnUserNameChanged(val value: String) : Event()
     class OnPasswordChanged(val value: String) : Event()
     data object OnUserNameReset : Event()
-    data object onPasswordVisibilirtyToggle : Event()
+    data object OnPasswordVisibilityToggle : Event()
     data object OnLogout : Event()
 }
 
 sealed class MainScreenState {
-    data class Logout(
+    data class LoggedOut(
         val isPasswordHidden: Boolean = true,
         val isLoading: Boolean = false,
         val userName: String = "",
         val userPassword: String = "",
-        val error: Error? = null
+        val error: ErrorState? = null
     ) : MainScreenState()
 
-    data class Login(val image: Bitmap, val userName: String) : MainScreenState()
+    data class LoggedIn(val image: Bitmap, val userName: String) : MainScreenState()
 }
 
-sealed class Error(open val throwable: Throwable, val messageRes: Int) {
-    data object NoInternet : Error(IllegalStateException("No internet connection"), R.string.error_no_internet)
-    data object InputError : Error(IllegalStateException("Input error "), R.string.error_input)
-    data object AuthorizationError : Error(IllegalStateException("Wrong username or password"), R.string.authorization_input)
-    data class General(override val throwable: Throwable) : Error(throwable, R.string.error_general)
-}

@@ -1,6 +1,7 @@
-package com.cvopa.peter.play.ui
+package com.cvopa.peter.play.ui.profile
 
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +11,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -23,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,25 +35,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cvopa.peter.play.MainScreenState
-import com.cvopa.peter.play.MainViewModel
-import com.cvopa.peter.play.ui.theme.ContactTheme
 import com.cvopa.peter.fetchy.R
-import com.cvopa.peter.play.Error
-import com.cvopa.peter.play.Event
+import com.cvopa.peter.play.ui.components.ErrorMessage
+import com.cvopa.peter.play.ui.components.ErrorState
+import com.cvopa.peter.play.ui.components.LoadingIndicator
+import com.cvopa.peter.play.ui.theme.ContactTheme
 import com.cvopa.peter.play.usecase.LoginDetails
+import com.cvopa.peter.play.util.isLandscape
 
 @Composable
-fun MainScreen() {
+fun ProfileScreen() {
     ContactTheme {
-        val viewModel: MainViewModel = viewModel()
+        val viewModel: ProfileScreenViewModel = viewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
-        MainScreen(state) { viewModel.onEvent(it) }
+        ProfileScreen(state) { viewModel.onEvent(it) }
     }
 }
 
 @Composable
-private fun MainScreen(
+private fun ProfileScreen(
     state: MainScreenState,
     onEvent: (Event) -> Unit = {}
 ) {
@@ -62,15 +64,15 @@ private fun MainScreen(
                 .then(Modifier.padding(top = 30.dp))
         ) {
             when (state) {
-                is MainScreenState.Logout -> {
-                    LoginScreen(
+                is MainScreenState.LoggedOut -> {
+                    LoggedOutScreen(
                         state = state,
                         onEvent = onEvent
                     )
                 }
 
-                is MainScreenState.Login -> {
-                    SuccessScreen(state = state, onEvent = onEvent)
+                is MainScreenState.LoggedIn -> {
+                    LoggedInScreen(state = state, onEvent = onEvent)
                 }
             }
         }
@@ -78,31 +80,47 @@ private fun MainScreen(
 }
 
 @Composable
-fun SuccessScreen(state: MainScreenState.Login, onEvent: (Event) -> Unit = {}) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape)
-                .padding(horizontal = 32.dp),
-            bitmap = state.image.asImageBitmap(), contentDescription = null
-        )
+private fun LoggedInScreen(state: MainScreenState.LoggedIn, onEvent: (Event) -> Unit = {}) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 16.dp)
-        ) {
-            Row {
-                Text(
-                    fontWeight = FontWeight.Bold,
-                    text = stringResource(id = R.string.user_name)
-                )
+    ) {
+        val spacerHeight = if (isLandscape()) 12.dp else 20.dp
+        Spacer(modifier = Modifier.height(spacerHeight))
+        Row {
+            Spacer(modifier = Modifier.weight(1f))
+            Card(
+                modifier = Modifier
+                    .weight(2f),
+                elevation = cardElevation()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp, vertical = 12.dp)
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(
+                                BorderStroke(3.dp, Color.White),
+                                CircleShape
+                            ),
+                        bitmap = state.image.asImageBitmap(), contentDescription = null
+                    )
+                    Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                        Text(
+                            fontWeight = FontWeight.Bold,
+                            text = stringResource(id = R.string.user_name)
+                        )
+                        Text(text = state.userName)
+                    }
+                }
             }
-            Row {
-                Text(text = state.userName)
-            }
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -112,43 +130,17 @@ fun SuccessScreen(state: MainScreenState.Login, onEvent: (Event) -> Unit = {}) {
                 .align(alignment = Alignment.CenterHorizontally)
                 .padding(12.dp)
         ) {
-            Button(onClick = { onEvent(Event.OnUserNameReset) }) {
+            Button(onClick = { onEvent(Event.OnLogout) }) {
                 Text(stringResource(id = R.string.logout))
             }
         }
     }
 }
 
-@Composable
-fun ErrorScreen(error: Error?) {
-    if (error == null) return
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Row {
-            Icon(
-                tint = Color.Red,
-                painter = painterResource(id = R.drawable.ic_error),
-                contentDescription = null
-            )
-        }
-
-        Row {
-            Text(
-                maxLines = 2,
-                color = Color.Red,
-                text = stringResource(id = error.messageRes)
-            )
-        }
-
-    }
-}
 
 @Composable
-fun LoginScreen(
-    state: MainScreenState.Logout,
+private fun LoggedOutScreen(
+    state: MainScreenState.LoggedOut,
     onEvent: (Event) -> Unit,
 ) {
     Column {
@@ -156,8 +148,9 @@ fun LoginScreen(
         PasswordField(state = state, onEvent = onEvent)
         Spacer(modifier = Modifier.weight(1f))
 
-        ErrorScreen(error = state.error)
-        LoadingIndicator(state = state)
+        ErrorMessage(error = state.error)
+        LoadingIndicator(isLoading = state.isLoading)
+
         Row(modifier = Modifier.align(alignment = Alignment.CenterHorizontally)) {
             Button(
                 modifier = Modifier.padding(vertical = 20.dp),
@@ -180,16 +173,7 @@ fun LoginScreen(
 }
 
 @Composable
-private fun LoadingIndicator(state: MainScreenState.Logout) {
-    if (state.isLoading) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            CircularProgressIndicator(modifier = Modifier.size(64.dp))
-        }
-    }
-}
-
-@Composable
-private fun UserNameField(state: MainScreenState.Logout, onEvent: (Event) -> Unit) {
+private fun UserNameField(state: MainScreenState.LoggedOut, onEvent: (Event) -> Unit) {
     TextField(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,7 +183,7 @@ private fun UserNameField(state: MainScreenState.Logout, onEvent: (Event) -> Uni
             onEvent(Event.OnUserNameChanged(value))
         },
         singleLine = true,
-        isError = state.error is Error.InputError,
+        isError = state.error is ErrorState.InputErrorState,
         label = {
             Text(stringResource(id = R.string.user_name))
         },
@@ -219,13 +203,13 @@ private fun UserNameField(state: MainScreenState.Logout, onEvent: (Event) -> Uni
 }
 
 @Composable
-private fun PasswordField(state: MainScreenState.Logout, onEvent: (Event) -> Unit) {
+private fun PasswordField(state: MainScreenState.LoggedOut, onEvent: (Event) -> Unit) {
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 16.dp),
         value = state.userPassword,
-        isError = state.error is Error.InputError,
+        isError = state.error is ErrorState.InputErrorState,
         singleLine = true,
         onValueChange = { value ->
             onEvent(Event.OnPasswordChanged(value))
@@ -236,7 +220,7 @@ private fun PasswordField(state: MainScreenState.Logout, onEvent: (Event) -> Uni
         visualTransformation = if (state.isPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
         trailingIcon = {
             IconButton(onClick = {
-                onEvent(Event.onPasswordVisibilirtyToggle)
+                onEvent(Event.OnPasswordVisibilityToggle)
             }) {
                 val visibilityIcon =
                     if (state.isPasswordHidden) R.drawable.ic_visibility else R.drawable.ic_visibility_off
@@ -262,31 +246,32 @@ private fun PasswordField(state: MainScreenState.Logout, onEvent: (Event) -> Uni
 @Preview(apiLevel = 33, device = "id:Nexus 4")
 @Composable
 fun MainScreenPreview() {
-    MainScreen(MainScreenState.Logout())
+    ProfileScreen(MainScreenState.LoggedOut())
 }
 
 
 @Preview(apiLevel = 33, device = "id:Nexus 4")
 @Composable
 fun MainScreenPreviewError() {
-    MainScreen(MainScreenState.Logout(error = Error.InputError))
+    ProfileScreen(MainScreenState.LoggedOut(error = ErrorState.InputErrorState))
 }
 
 
 @Preview(apiLevel = 33, device = "id:Nexus 4")
 @Composable
 fun MainScreenPreviewLoading() {
-    MainScreen(MainScreenState.Logout(isLoading = true))
+    ProfileScreen(MainScreenState.LoggedOut(isLoading = true))
 }
 
 @Preview(apiLevel = 33, device = "id:Nexus 4")
 @Composable
-fun MainScreenPreviewLoFFF() {
-    val context = LocalContext.current
-    MainScreen(
-        MainScreenState.Login(
-            userName = "Peter User",
-            image = BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher_background)
+fun MainScreenPreviewLoggedIn() {
+    val textBitmap = Bitmap.createBitmap(1024, 768, Bitmap.Config.ARGB_8888)
+        .apply { eraseColor(android.graphics.Color.GREEN) }
+    ProfileScreen(
+        MainScreenState.LoggedIn(
+            userName = "Peter The User",
+            image = textBitmap
         )
     )
 }

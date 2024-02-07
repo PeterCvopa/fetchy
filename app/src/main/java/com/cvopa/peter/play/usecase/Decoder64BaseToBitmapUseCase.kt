@@ -3,7 +3,7 @@ package com.cvopa.peter.play.usecase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import com.cvopa.peter.play.util.UseCase
+import com.cvopa.peter.play.ui.base.UseCase
 import javax.inject.Inject
 
 
