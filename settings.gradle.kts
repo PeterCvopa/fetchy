@@ -13,6 +13,6 @@ dependencyResolutionManagement {
 
 }
 
-rootProject.name = "Fetchy"
+rootProject.name = "fetchy"
 include(":app")
  

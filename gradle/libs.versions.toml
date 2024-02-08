@@ -15,6 +15,9 @@ retrofit_version = "2.9.0"
 guava_version = "33.0.0-android"
 interceptor_version = "4.11.0"
 junit_version = "4.13.2"
+mockk_version = "1.13.9"
+coroutines_version ="1.7.1"
+tubine_version ="1.0.0"
 
 [libraries]
 
@@ -40,7 +43,6 @@ lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", v
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle_version" }
 lifecycle-savestate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle_version" }
 lifecycle-compiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecycle_version" }
-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment_version" }
 
 # core
 core = { module = "androidx.core:core-ktx", version.ref = "androidx_core_version" }
@@ -62,8 +64,11 @@ guava = { group = "com.google.guava", name = "guava", version.ref = "guava_versi
 
 #testing
 junit = { module = "junit:junit", version.ref = "junit_version" }
-junit-compose =  { group = "androidx.compose.ui", name = "ui-test-junit4" }
-junit-compose-ui-manifest =  { group = "androidx.compose.ui", name = "ui-test-manifest" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk_version" }
+coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines_version" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "tubine_version"}
+junit-compose = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+junit-compose-ui-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 [plugins]
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt_version" }
