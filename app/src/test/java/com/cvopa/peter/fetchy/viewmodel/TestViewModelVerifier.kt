@@ -9,11 +9,11 @@ import org.junit.Assert.assertTrue
 
 abstract class ViewModelStateVerifier<VM : ViewModel>(protected val viewModel: VM)
 
-fun assertThat(viewModel: ProfileScreenViewModel): ProfileViewModelVerifier {
+internal fun assertThat(viewModel: ProfileScreenViewModel): ProfileViewModelVerifier {
     return ProfileViewModelVerifier(viewModel)
 }
 
-class ProfileViewModelVerifier(viewModel: ProfileScreenViewModel) : ViewModelStateVerifier<ProfileScreenViewModel>(viewModel) {
+internal class ProfileViewModelVerifier(viewModel: ProfileScreenViewModel) : ViewModelStateVerifier<ProfileScreenViewModel>(viewModel) {
 
     fun assertInitialState(): ProfileViewModelVerifier {
         assertEquals(viewModel.state.value, MainScreenState.LoggedOut())
