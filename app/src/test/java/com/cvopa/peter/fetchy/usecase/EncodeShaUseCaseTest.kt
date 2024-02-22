@@ -1,6 +1,5 @@
 package com.cvopa.peter.fetchy.usecase
 
-import com.cvopa.peter.fetchy.usecase.EncodeSha1UseCase
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

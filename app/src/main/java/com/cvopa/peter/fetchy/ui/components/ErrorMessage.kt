@@ -48,7 +48,6 @@ internal fun ErrorMessage(error: ErrorState?) {
                     text = errorText
                 )
             }
-
         }
     }
 }

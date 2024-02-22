@@ -18,8 +18,14 @@ junit_version = "4.13.2"
 mockk_version = "1.13.9"
 coroutines_version ="1.7.1"
 tubine_version ="1.0.0"
+junit = "1.1.5"
+espresso-core = "3.5.1"
+appcompat = "1.6.1"
+material = "1.11.0"
 
 [libraries]
+
+gradle = { module = "com.android.tools.build:gradle", version.ref = "agp_version" }
 
 #Timber
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_version" }
@@ -69,10 +75,15 @@ coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ver
 turbine = { module = "app.cash.turbine:turbine", version.ref = "tubine_version"}
 junit-compose = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 junit-compose-ui-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt_version" }
-gradle = { id = "com.android.application", version.ref = "agp_version" }
+android-application = { id = "com.android.application", version.ref = "agp_version" }
+android-library = { id = "com.android.library", version.ref = "agp_version" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin_version" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp_version" }
 
