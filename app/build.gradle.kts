@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+apply(plugin = "com.cvopa.countlines")
+
 android {
     namespace = "com.cvopa.peter.fetchy"
     compileSdk = 34
@@ -25,12 +27,12 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
-            buildConfigField( "String",     "BASEURL", "\"https://mobility.cleverlance.com/\"")
+            buildConfigField("String", "BASEURL", "\"https://mobility.cleverlance.com/\"")
         }
 
         release {
             isMinifyEnabled = false
-            buildConfigField( "String", "BASEURL", "\"https://mobility.cleverlance.com/\"")
+            buildConfigField("String", "BASEURL", "\"https://mobility.cleverlance.com/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -60,6 +62,15 @@ android {
     }
 }
 
+countlinesData {
+    emptyLines = true
+    fileExtension = "kt"
+}
+//TODO toto je pekna smakocinka
+fun Project.countlinesData(action: com.cvopa.CountLinesPluginExtension.() -> Unit) {
+    (this.extensions.getByName("countlinesData") as com.cvopa.CountLinesPluginExtension).apply(action)
+}
+
 dependencies {
 
     //timber
@@ -79,7 +90,6 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.lifecycle)
     implementation(libs.hilt.compose)
-
 
     // dagger
     implementation(libs.dagger.base)
@@ -113,4 +123,5 @@ dependencies {
     androidTestImplementation(libs.junit.compose)
     debugImplementation(libs.androidx.compose.ui.preview)
     debugImplementation(libs.junit.compose.ui.manifest)
+    debugImplementation(libs.leakcanary.android)
 }

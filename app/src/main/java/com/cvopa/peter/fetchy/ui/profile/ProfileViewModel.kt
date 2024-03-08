@@ -101,6 +101,7 @@ class ProfileScreenViewModel @Inject constructor(
     private fun setLoading() {
         state.value.let {
             if (it is MainScreenState.LoggedOut) {
+
                 emitState(it.copy(isLoading = true))
             }
         }

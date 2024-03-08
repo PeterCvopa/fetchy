@@ -1,8 +1,10 @@
 [versions]
 
+
 hilt_extension_version = "1.1.0"
 hilt_version = "2.48.1"
 dagger_version = "2.48.1"
+leakcanary-android_verions = "3.0-alpha-1"
 timber_version = "5.0.1"
 lifecycle_version = "2.7.0"
 fragment_version = "2.6.2"
@@ -23,11 +25,15 @@ espresso-core = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
 
+countlines = "1.0.0"
+
 [libraries]
 
+countlines = { module = "com.cvopa.countlines:countlines", version.ref = "countlines" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp_version" }
 
 #Timber
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary-android_verions" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_version" }
 
 #hilt
@@ -86,5 +92,5 @@ android-application = { id = "com.android.application", version.ref = "agp_versi
 android-library = { id = "com.android.library", version.ref = "agp_version" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin_version" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp_version" }
-
+countlines = { id = "com.cvopa.countlines", version.ref = "countlines" }
 

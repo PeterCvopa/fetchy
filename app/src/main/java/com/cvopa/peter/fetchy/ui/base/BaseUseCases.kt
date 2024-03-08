@@ -1,7 +1,6 @@
 package com.cvopa.peter.fetchy.ui.base
 
-
-sealed interface BaseUseCase<in I, out O>
+interface BaseUseCase<in I, out O>
 
 /**
  * Base use case for use cases with synchronous invoke method.

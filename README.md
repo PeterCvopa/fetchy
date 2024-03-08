@@ -17,3 +17,16 @@
     3. submodul 3. :profile:implementation -> kde by bola vsetka logika a test + implementacia provideProfileScreenImpl ktore by vracala composable 
 4. :profile: module by potom v gradle api(api sposob priadnia dependencie) :api module a implementoval by :profile:di a :profile:implementation module. 
    Toto by zabespecilo ze z vonku by bola viditelna len method provideProfileScreen a intena implemenaticia by nebola viditelna z App
+
+
+
+### Pre technickke interview
+
+- state uptade method for atomic update of state
+- channel events ktore prudia z UI
+  - co je channel
+    - hot 
+  - channel vs flow
+  - hot vs cold
+-repository -> interface  a mak by decaple from the implementation
+  - tym padom by sa 
